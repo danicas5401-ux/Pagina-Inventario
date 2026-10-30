@@ -1,0 +1,15 @@
+FERRETERIA UNIVERSAL DEL FLEJE - VERSION SIMPLE
+
+Como usarla: haz doble clic en index.html (se abre en tu navegador). No necesita internet.
+
+Archivos:
+  index.html   -> las pantallas (lo que se ve)
+  estilos.css  -> los colores y el diseno (los colores estan arriba, en :root)
+  programa.js  -> todo lo que hace la pagina, con comentarios en cada parte
+  logo.png     -> tu logo (cambialo por el tuyo, con el mismo nombre)
+
+Primera vez: en "Crear cuenta", la primera cuenta es el ADMINISTRADOR.
+Las demas cuentas que se creen desde la pantalla de inicio son VENDEDORES.
+El administrador puede cambiar roles, claves y datos del negocio en la pestana Usuarios.
+
+Haz copias de seguridad seguido: Usuarios > Descargar copia.
