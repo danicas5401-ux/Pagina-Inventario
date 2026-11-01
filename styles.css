@@ -170,7 +170,7 @@ body.locked .wrap{display:none}
 .lkerr{color:var(--accent);font-weight:600;min-height:1.3em;margin-bottom:8px;font-size:.9rem}
 @media print{#lock{display:none!important}}
 
-/* ===== Marca y animaciones (Ajustes para el nuevo Logo) ===== */
+/* ===== Marca y animaciones ===== */
 :root{--brand:#161616}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--brand:#262626}}
 :root[data-theme="dark"]{--brand:#262626}

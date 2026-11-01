@@ -13,7 +13,8 @@
   <div class="lkbox">
     <img class="lklogo" src="logo.png" alt="Ferretería Universal del Fleje">
     <h2 class="lkt">Ferretería Universal del Fleje</h2>
-    <section id="lkSetup" hidden>
+    
+    <section id="lkSetup">
       <p class="hint" style="text-align:center">Crea la cuenta del único administrador.</p>
       <label>Tu nombre<input id="stName" maxlength="40"></label>
       <label>Usuario<input id="stUser" maxlength="20" autocomplete="off"></label>
@@ -21,7 +22,9 @@
       <label>Repite la contraseña<input id="stPass2" type="password" autocomplete="new-password"></label>
       <div class="lkerr" id="stErr"></div>
       <button class="primary" id="stGo" style="width:100%">Crear administrador y entrar</button>
+      <button class="ghost" id="stToLogin" style="width:100%;margin-top:10px" hidden>¿Ya tienes cuenta? Iniciar sesión</button>
     </section>
+
     <section id="lkLogin" hidden>
       <p class="hint" style="text-align:center">Inicia sesión para continuar.</p>
       <label>Usuario<input id="lkUser" autocomplete="username"></label>
@@ -30,12 +33,14 @@
       <button class="primary" id="lkGo" style="width:100%">Entrar</button>
       <button class="ghost" id="lkForgot" style="width:100%;margin-top:10px">¿Olvidaste tu contraseña?</button>
     </section>
+
     <section id="lkCode" hidden>
       <h3 style="margin:0 0 6px">Guarda tu código de recuperación</h3>
       <p class="hint">Anótalo: es la única forma de recuperar la contraseña. No se vuelve a mostrar.</p>
       <div class="tot" style="text-align:center"><b id="recCode"></b></div>
       <button class="primary" id="codeGo" style="width:100%">Ya lo guardé, entrar</button>
     </section>
+
     <section id="lkRec" hidden>
       <p class="hint" style="text-align:center">Recupera tu cuenta con el código.</p>
       <label>Usuario del administrador<input id="rcUser" autocomplete="off"></label>
@@ -47,8 +52,17 @@
     </section>
   </div>
 </div>
+
 <div class="wrap">
-  <div class="top"><h1><img class="toplogo" src="logo.png" alt=""><span>Ferretería Universal del Fleje</span></h1><div class="who"><span id="whoName"></span><button id="bPass">Cambiar contraseña</button><button id="bOut">Cerrar sesión</button></div></div>
+  <div class="top">
+    <h1><img class="toplogo" src="logo.png" alt=""><span>Ferretería Universal del Fleje</span></h1>
+    <div class="who">
+      <span id="whoName"></span>
+      <button id="bReload" title="Actualizar página">🔄 Actualizar</button>
+      <button id="bPass">Cambiar contraseña</button>
+      <button id="bOut">Cerrar sesión</button>
+    </div>
+  </div>
 
   <nav class="tabs"><button id="tInv" aria-pressed="true">📦 Inventario</button><button id="tSales" aria-pressed="false">🧾 Ventas y facturas</button><button id="tCaja" aria-pressed="false">💰 Cierre de caja</button><button id="tUsers" class="adm" aria-pressed="false">👥 Usuarios</button></nav>
   <div id="vInv">
@@ -86,7 +100,7 @@
       <h3 style="margin:16px 0 6px">Gastos del día</h3>
       <div class="bar"><input id="gDesc" maxlength="60" placeholder="¿En qué gastaste?" style="flex:1 1 200px" aria-label="Descripción del gasto"><input id="gAmt" class="money" type="text" inputmode="numeric" autocomplete="off" placeholder="Valor" style="width:130px" aria-label="Valor del gasto"><select id="gPay" aria-label="Pagado con"><option>Efectivo</option><option>Transferencia</option></select><button class="primary" id="gAdd">Agregar gasto</button></div>
       <div id="gList"></div>
-      <div class="fgrid"><label>Base inicial de caja (opcional)<input id="cBase" class="money" type="text" inputmode="numeric" autocomplete="off" placeholder="Efectivo con el que abriste"></label><label>Efectivo contado en caja<input id="cCash" class="money" type="text" inputmode="numeric" autocomplete="off" placeholder="Lo que hay ahora en la caja"></label></div>
+      <div class="fgrid"><label>Base inicial de caja (Fija del día)<input id="cBase" class="money" type="text" inputmode="numeric" autocomplete="off" placeholder="Efectivo de apertura" disabled readonly></label><label>Total contado en caja al cerrar<input id="cCash" class="money" type="text" inputmode="numeric" autocomplete="off" placeholder="Efectivo + Transferencia total en caja"></label></div>
       <div id="cuadre"></div>
       <button id="cClose" class="primary" style="width:100%">Cerrar caja y comenzar día nuevo</button>
     </section>
@@ -103,7 +117,7 @@
   <div id="vUsers" hidden>
     <section class="panel" style="margin-bottom:16px">
       <h2>Usuarios</h2>
-      <p class="hint">Administrador: acceso total. Vendedor: tú eliges qué puede usar con el botón «Permisos»; el vendedor nunca ve los costos, solo precio, existencias y mínimo. Los usuarios y el historial de entradas y salidas son solo para administradores.</p>
+      <p class="hint">Administrador: acceso total. Vendedor: tú eliges qué puede usar con el botón «Permisos»; el vendedor nunca ve los costos, solo precio, existencias y mínimo.</p>
       <div id="uList"></div>
       <div id="uBulk" style="margin-top:10px"></div>
     </section>
@@ -119,7 +133,7 @@
       <button class="primary" id="uAdd">Crear usuario</button>
     </section>
     <section class="panel" style="margin-top:16px">
-      <div class="dhead"><h2>Historial de entradas y salidas</h2><button class="ghost" id="hClear">Borrar historial</button></div>
+      <div class="dhead"><h2>Historial de entradas y salidas</h2></div>
       <div class="bar"><select id="hUser" aria-label="Filtrar por usuario"></select></div>
       <div class="tablebox"><table><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Evento</th><th class="n">Tiempo conectado</th></tr></thead><tbody id="hRows"></tbody></table></div>
       <div id="hEmpty" class="empty" hidden>Aún no hay movimientos registrados.</div>
@@ -158,7 +172,6 @@
           </div></details>
           <label>Tipo de factura<select id="sType"><option value="f">Física (para imprimir)</option><option value="e">Electrónica</option></select></label>
           <label>Forma de pago<select id="sPay"><option>Efectivo</option><option>Transferencia</option></select></label>
-          <div class="full" id="sendBox" hidden><label>Enviar la factura al cliente<select id="sSend"><option value="wa">Por WhatsApp</option><option value="mail">Por correo electrónico</option><option value="no">No enviar ahora</option></select></label></div>
           <details class="full cli"><summary>🏷️ Descuento e IVA</summary><div class="fgrid">
           <label>Descuento<select id="sDiscT"><option value="p">Porcentaje (%)</option><option value="v">Valor en pesos</option></select></label>
           <label>Monto del descuento<input id="sDiscV" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></label>
@@ -195,8 +208,6 @@
 <dialog id="invDlg">
   <div id="invBody"></div>
   <div class="dfoot noprint">
-    <button id="invWa" hidden>📲 Enviar por WhatsApp</button>
-    <button id="invMail" hidden>✉️ Enviar por correo</button>
     <button class="primary" id="invPrint">🖨️ Imprimir</button>
     <button id="invCopy">Copiar texto</button>
     <button class="ghost" id="invClose">Cerrar</button>
@@ -231,6 +242,8 @@
   </form>
 </dialog>
 
+<!-- Librería de Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
 </html>
