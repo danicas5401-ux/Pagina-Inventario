@@ -251,6 +251,7 @@
   function reflow(inp,mode){var d=inp.value.replace(/\./g,'');inp.value=mode==='v'?fmtDots(d):d}
   function isMoney(t){
     if(t.classList.contains('money'))return true;
+    if(t.id==='askIn')return true;
     if(t.id==='sDiscV')return $('sDiscT').value==='v';
     if(t.id==='sLd')return $('sLt').value==='v';
     if(t.classList.contains('ld')){var s=t.parentNode.querySelector('.lt');return !!s&&s.value==='v'}
@@ -486,7 +487,7 @@
   $('invClose').onclick=function(){$('invCopy').textContent='Copiar texto';$('invDlg').close();};
 
   var askCb=null;
-  function ask(m,d,cb,t){askCb=cb;$('askIn').type=t||'text';$('askMsg').textContent=m;$('askIn').value=d||'';$('askDlg').showModal();$('askIn').focus();$('askIn').select()}
+  function ask(m,d,cb,t){askCb=cb;$('askIn').type=t||'text';$('askMsg').textContent=m;$('askIn').value=d?fmtDots(String(d)):'';$('askDlg').showModal();$('askIn').focus();$('askIn').select()}
   $('askOk').onclick=function(){var f=askCb,v=$('askIn').value;askCb=null;$('askDlg').close();if(f)f(v)};
   $('askNo').onclick=function(){askCb=null;$('askDlg').close()};
   $('askIn').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('askOk').click()}});
