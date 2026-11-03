@@ -290,10 +290,6 @@
     '<div class="itot">'+(s.disc?'<div><span>Valor productos</span><span>'+cop.format(s.gross)+'</span></div><div><span>Descuento</span><span>-'+cop.format(s.disc)+'</span></div>':'')+'<div><span>Subtotal</span><span>'+cop.format(s.sub)+'</span></div><div><span>IVA 19%</span><span>'+cop.format(s.tax)+'</span></div><div class="grand"><span>TOTAL</span><span>'+cop.format(s.total)+'</span></div></div>'+
     '<div class="ithanks">¡Gracias por su compra!</div><div class="legal">'+legal+'</div></div>';
   }
-  function invText(s){if(s.text)return s.text;
-    return [(cfg.name||NAME)+' - NIT '+(cfg.nit||''),(s.type==='e'?'Factura electrónica ':'Factura ')+s.num,new Date(s.date).toLocaleString('es-CO'),'Cliente: '+s.cust+' ('+s.doc+')'+(s.phone?' Tel. '+s.phone:''),''].concat(
-      s.lines.map(l=>l.qty+' x '+l.name+'  '+cop.format(l.qty*l.price)+(l.disc?' (desc. -'+cop.format(l.disc)+')':'')),['',...(s.disc?['Descuento -'+cop.format(s.disc)]:[]),'Subtotal '+cop.format(s.sub),'IVA '+cop.format(s.tax),'TOTAL '+cop.format(s.total)]).join('\n');
-  }
   function showInv(s){curInv=s;$('invBody').innerHTML=invHTML(s);if(!$('invDlg').open)$('invDlg').showModal();}
 
   function findC(d){d=(d||'').trim();return customers.find(c=>c.doc===d)}
@@ -369,7 +365,6 @@
   function openCuadre(){var l=openExp(),r=agg(openSales()),cs=$('cCash').value;return {total:r.total,exp:sumExp(l),base:parseM($('cBase').value),counted:cs===''?null:Math.max(0,parseM(cs))}}
   function renderCuadre(){$('cuadre').innerHTML=cuadreHTML(openCuadre())}
   function closureHTML(c){return head('<div>Cierre de caja</div>')+'<div>'+esc(fmtDate(c.date))+'</div><div class="small">Facturas '+c.from+' a '+c.to+'</div>'+reportHTML(c,1)+cuadreHTML(closeCuadre(c))+gastosHTML(c)+invList(c)}
-  function closureText(c){var L=[(cfg.name||NAME)+' - Cierre de caja',fmtDate(c.date),'Facturas '+c.from+' a '+c.to,'','Facturas: '+c.n,'TOTAL VENDIDO: '+cop.format(c.total),'Gastos: '+cop.format(c.exp||0),'TOTAL NETO: '+cop.format(c.total-(c.exp||0))];return L.join('\n')}
   function rowH(s){return '<div class="hrow" data-id="'+s.id+'"><div class="'+(s.void?'void':'')+'"><b>'+s.num+'</b> '+(s.type==='e'?'(electrónica)':'(física)')+'<small>'+esc(s.cust)+' - '+new Date(s.date).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})+'</small></div><div style="text-align:right"><div class="'+(s.void?'void':'')+'">'+cop.format(s.total)+'</div><button class="ghost" data-a="ver" style="min-height:30px;padding:2px 8px">Ver</button> '+(s.void||s.closed?'':'<button class="ghost adm" data-a="anular" style="min-height:30px;padding:2px 8px">Anular</button>')+'</div></div>'}
   function dayG(title,list,open){var v=list.filter(s=>!s.void),t=v.reduce((a,s)=>a+s.total,0);
     return '<details class="dayg"'+(open?' open':'')+'><summary><span>'+title+'</span><span class="dsum">'+v.length+' fact. - '+cop.format(t)+'</span></summary>'+(list.length?list.map(rowH).join(''):'<div class="empty">Aún no hay facturas hoy.</div>')+'</details>'}
@@ -383,7 +378,7 @@
     return h}
   function invList(c){var l=sales.filter(s=>s.closed===c.id);return l.length?'<h3 style="margin:14px 0 4px">Facturas de este cierre</h3>'+l.map(s=>'<div class="hrow"><span class="'+(s.void?'void':'')+'">'+s.num+' - '+esc(s.cust)+(s.void?' (anulada)':'')+'</span><span class="'+(s.void?'void':'')+'">'+cop.format(s.total)+' <button class="ghost noprint" data-inv="'+s.id+'" style="min-height:28px;padding:2px 8px">Ver</button></span></div>').join(''):''}
   $('invBody').addEventListener('click',function(e){var b=e.target.closest('[data-inv]');if(!b)return;var s=sales.find(x=>x.id===b.getAttribute('data-inv'));if(s)showInv(s)});
-  function showHtml(h,t){curInv={text:t};$('invBody').innerHTML='<div class="invoice">'+h+'</div>';if(!$('invDlg').open)$('invDlg').showModal()}
+  function showHtml(h){$('invBody').innerHTML='<div class="invoice">'+h+'</div>';if(!$('invDlg').open)$('invDlg').showModal()}
   function renderCaja(){
     var r=agg(openSales());
     r.exp=sumExp(openExp());renderGastos();$('cajaOpen').innerHTML=(r.n||r.exp)?reportHTML(r):'<div class="empty">Aún no hay ventas sin cerrar. Cuando emitas facturas, aparecerán aquí.</div>';
@@ -411,7 +406,7 @@
   $('cMonthT').onclick=function(){setMonthOpen($('cMonthBody').style.display==='none')};
   (function(){var o=true;try{o=localStorage.getItem('ferreteria-resumen-mes')!=='0'}catch(e){}setMonthOpen(o)})();
   $('cCash').addEventListener('input',renderCuadre);
-  $('cDays').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var id=b.closest('tr').getAttribute('data-id'),c=closures.find(x=>x.id===id);if(c)showHtml(closureHTML(c),closureText(c))});
+  $('cDays').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var id=b.closest('tr').getAttribute('data-id'),c=closures.find(x=>x.id===id);if(c)showHtml(closureHTML(c))});
   
   $('cClose').onclick=function(){
     var list=openSales(),gl=openExp();if(!list.length&&!gl.length)return;
@@ -421,13 +416,12 @@
     var c=Object.assign(r,{id:'c'+Date.now(),date:key,closedAt:new Date().toISOString(),from:list.length?list[list.length-1].num:'-',to:list.length?list[0].num:'-',cash:cash,base:parseM($('cBase').value),expected:parseM($('cBase').value)+r.total-ge,exp:ge,gastos:gl.map(g=>({desc:g.desc,amount:g.amount,pay:g.pay}))});
     closures.push(c);sales.filter(s=>!s.closed).forEach(s=>{s.closed=c.id});gl.forEach(g=>{g.closed=c.id});
     
-    // Resetear entradas de caja para el nuevo día
     $('cCash').value='';
     $('cBase').value='';
     $('cBase').disabled = false;
     $('cBase').readOnly = false;
     
-    saveS();renderSales();renderCaja();showHtml(closureHTML(c),closureText(c));
+    saveS();renderSales();renderCaja();showHtml(closureHTML(c));
   };
 
   $('tCaja').onclick=function(){$('vInv').hidden=true;$('vSales').hidden=true;$('vCaja').hidden=false;$('tInv').setAttribute('aria-pressed',false);$('tSales').setAttribute('aria-pressed',false);this.setAttribute('aria-pressed',true);renderCaja()};
@@ -480,11 +474,8 @@
     s.void=true;s.voidBy=me?me.name:'';s.lines.forEach(l=>{var p=items.find(x=>x.id===l.pid);if(p)p.stock+=l.qty;});
     save();saveS();render();renderSales();
   });
-  $('invPrint').onclick=function(){try{window.print()}catch(e){alert('No se pudo abrir la impresión. Usa Copiar texto o la captura de pantalla.')}};
-  $('invCopy').onclick=function(){
-    try{navigator.clipboard.writeText(invText(curInv)).then(function(){$('invCopy').textContent='Copiado'},function(){alert(invText(curInv))})}catch(e){alert(invText(curInv))}
-  };
-  $('invClose').onclick=function(){$('invCopy').textContent='Copiar texto';$('invDlg').close();};
+  $('invPrint').onclick=function(){try{window.print()}catch(e){alert('No se pudo abrir la impresión.')}};
+  $('invClose').onclick=function(){$('invDlg').close();};
 
   var askCb=null;
   function ask(m,d,cb,t){askCb=cb;$('askIn').type=t||'text';$('askMsg').textContent=m;$('askIn').value=d?fmtDots(String(d)):'';$('askDlg').showModal();$('askIn').focus();$('askIn').select()}
@@ -507,7 +498,7 @@
     expenses=expenses.filter(x=>x!==g);saveS();renderCaja();
   });
 
-  var UKEY='ferreteria-usuarios-v1', users=[], rec=null, hist=[], me=null, fails=0, lockUntil=0, idle=null, sessStart=0;
+  var UKEY='ferreteria-usuarios-v1', users=[], rec=null, hist=[], me=null, fails=0, lockUntil=0, sessStart=0;
   function loadU(){try{var r=JSON.parse(localStorage.getItem(UKEY)||'null');if(r){users=r.users||[];rec=r.rec||null;hist=r.hist||[]}}catch(e){}}
   function saveU(){try{localStorage.setItem(UKEY,JSON.stringify({users:users,rec:rec,hist:hist}))}catch(e){}}
   function isAdmin(){return !!me&&me.role==='admin'}
@@ -542,8 +533,7 @@
     hist.push({id:'h'+now+Math.random().toString(36).slice(2,5),uid:me.id,name:me.name,user:me.user,type:type,at:new Date(now).toISOString(),dur:type==='in'?0:(sessStart?now-sessStart:0)});
     if(hist.length>1000)hist=hist.slice(-1000);saveU();
   }
-  function bump(){clearTimeout(idle);if(me)idle=setTimeout(function(){logout('idle')},600000)}
-  ['click','keydown','mousemove'].forEach(function(ev){document.addEventListener(ev,bump,true)});
+  
   function showTab(n){
     if(!tabOk(n))return;
     var m={inv:['tInv','vInv'],sales:['tSales','vSales'],caja:['tCaja','vCaja'],users:['tUsers','vUsers']};
@@ -554,7 +544,6 @@
   $('tInv').onclick=function(){showTab('inv')};$('tSales').onclick=function(){showTab('sales')};
   $('tCaja').onclick=function(){showTab('caja')};$('tUsers').onclick=function(){showTab('users')};
 
-  // Solicitar base inicial y bloquear el campo para que no se pueda modificar
   function checkBaseOnLogin(){
     if(!$('cBase').value.trim()){
       setTimeout(function(){
@@ -578,12 +567,12 @@
     sessStart=Date.now();logEv('in');
     applyPerms();render();renderSales();
     var ft=firstTab();if(!ft){alert('Este usuario no tiene accesos asignados. Habla con el administrador.');logout('out');return}
-    showTab(ft);bump();
+    showTab(ft);
     checkBaseOnLogin();
   }
   function logout(why){
     if(me)logEv(why==='idle'?'idle':'out');
-    me=null;sessStart=0;cart=[];clearTimeout(idle);render();
+    me=null;sessStart=0;cart=[];render();
     ['invDlg','catDlg','dlg','askDlg'].forEach(function(i){if($(i).open)$(i).close()});drawer(false);
     document.body.classList.add('locked');$('lock').hidden=false;$('lkPass').value='';msg('lkErr','');lkShow('lkLogin');
   }
@@ -656,7 +645,7 @@
     $('uBulk').innerHTML=n?'<button class="ghost" style="color:#b42318;border-color:#b42318">Eliminar los '+n+' usuario'+(n===1?'':'s')+' desactivado'+(n===1?'':'s')+'</button>':'';
     renderHist();
   }
-  var EV={in:'Entró al sistema',out:'Salió (cerró sesión)',idle:'Salida automática por inactividad',close:'Salió de la página (cerró o recargó)'};
+  var EV={in:'Entró al sistema',out:'Salió (cerró sesión)',close:'Salió de la página (cerró o recargó)'};
   function fmtDur(ms){if(!ms)return '-';var m=Math.round(ms/60000);if(m<1)return 'menos de 1 min';if(m<60)return m+' min';return Math.floor(m/60)+' h '+(m%60)+' min'}
   function renderHist(){
     var sel=$('hUser'),cur=sel.value,seen={},opts=['<option value="">Todos los usuarios</option>'];
